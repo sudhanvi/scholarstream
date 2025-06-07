@@ -6,20 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ShareDialog } from "./ShareDialog";
 import { useToast } from "@/hooks/use-toast";
-import { ThemeToggle } from "@/components/ThemeToggle"; // Import ThemeToggle
+import { ThemeToggle } from "@/components/ThemeToggle";
 import {
   ZoomIn,
   ZoomOut,
   Scissors,
   Share2,
-  Moon,
-  Sun,
   File,
   Columns,
   ChevronsUpDown,
   Glasses,
   Minimize,
-  X // Added X for hide toolbar button
+  X
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -31,20 +29,16 @@ import { cn } from '@/lib/utils';
 
 interface ViewerToolbarProps {
   documentName: string;
-  onToggleNightMode: () => void;
-  isNightMode: boolean;
   onSetViewMode: (mode: 'single' | 'continuous') => void;
   currentViewMode: 'single' | 'continuous';
-  onToggleReaderMode?: () => void; 
-  onExitReaderMode?: () => void; 
-  isReaderModeActive: boolean; 
-  onHideToolbarInReaderMode?: () => void; // New prop
+  onToggleReaderMode?: () => void;
+  onExitReaderMode?: () => void;
+  isReaderModeActive: boolean;
+  onHideToolbarInReaderMode?: () => void;
 }
 
-export function ViewerToolbar({ 
-  documentName, 
-  onToggleNightMode, 
-  isNightMode,
+export function ViewerToolbar({
+  documentName,
   onSetViewMode,
   currentViewMode,
   onToggleReaderMode,
@@ -58,7 +52,7 @@ export function ViewerToolbar({
   const handleSnip = () => {
     toast({
       title: "Region Snip Tool (Mock)",
-      description: "In a full version, you could drag to select an area to save as PNG. This is for region snipping. Text/image selection snipping from context would be a separate feature.",
+      description: "In a full version, you could drag to select an area of the page to save as a PNG. Text/image selection snipping from highlighted content would be a separate feature, likely via a context menu.",
     });
   };
 
@@ -68,7 +62,7 @@ export function ViewerToolbar({
   return (
     <div className={cn(
         "bg-card border-b p-2 shadow-sm flex flex-wrap items-center justify-between gap-2 viewer-toolbar",
-        isReaderModeActive ? "rounded-none" : "rounded-t-lg" // No rounded corners for fixed reader mode toolbar
+        isReaderModeActive ? "rounded-none" : "rounded-t-lg"
       )}>
       <h2 className="text-sm font-medium font-headline truncate px-2 py-1" title={documentName}>
         {documentName}
@@ -94,7 +88,7 @@ export function ViewerToolbar({
         <Button variant="ghost" size="icon" onClick={handleZoomIn} aria-label="Zoom In">
           <ZoomIn className="h-5 w-5" />
         </Button>
-        
+
         <Separator orientation="vertical" className="h-6 mx-1" />
 
         <Button variant="ghost" size="icon" onClick={() => onSetViewMode('single')} aria-label="Single Page View" className={currentViewMode === 'single' ? 'bg-accent' : ''}>
@@ -103,14 +97,9 @@ export function ViewerToolbar({
         <Button variant="ghost" size="icon" onClick={() => onSetViewMode('continuous')} aria-label="Continuous Scroll View" className={currentViewMode === 'continuous' ? 'bg-accent' : ''}>
           <Columns className="h-5 w-5" />
         </Button>
-        
-        <Separator orientation="vertical" className="h-6 mx-1" />
-        
-        <Button variant="ghost" size="icon" onClick={onToggleNightMode} aria-label={isNightMode ? "Disable Night Mode" : "Enable Night Mode"}>
-          {isNightMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-        </Button>
 
-        {/* Reader Mode Toggles / Theme Toggle */}
+        <Separator orientation="vertical" className="h-6 mx-1" />
+
         {isReaderModeActive ? (
           <>
             {onExitReaderMode && (
@@ -119,7 +108,7 @@ export function ViewerToolbar({
               </Button>
             )}
             <Separator orientation="vertical" className="h-6 mx-1" />
-            <ThemeToggle /> 
+            <ThemeToggle />
             {onHideToolbarInReaderMode && (
               <Button variant="ghost" size="icon" onClick={onHideToolbarInReaderMode} aria-label="Hide Toolbar" className="ml-1">
                 <X className="h-5 w-5" />

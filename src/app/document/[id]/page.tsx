@@ -9,8 +9,8 @@ import { ViewerToolbar } from '@/components/viewer/ViewerToolbar';
 import { StudyAidsSidebar } from '@/components/viewer/StudyAidsSidebar';
 import { AiSuggestionsClient } from '@/components/viewer/AiSuggestionsClient';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Button } from '@/components/ui/button'; 
-import { AlertTriangle, Menu, X } from 'lucide-react'; 
+import { Button } from '@/components/ui/button';
+import { AlertTriangle, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useReaderMode } from '@/contexts/ReaderModeContext';
 
@@ -19,7 +19,6 @@ export default function DocumentViewerPage() {
   const id = params.id as string;
   const [document, setDocument] = useState<PdfDocument | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isNightMode, setIsNightMode] = useState(false);
   const [viewMode, setViewMode] = useState<'single' | 'continuous'>('continuous');
   const { isReaderMode, setIsReaderMode } = useReaderMode();
   const [isToolbarVisibleInReaderMode, setIsToolbarVisibleInReaderMode] = useState(false);
@@ -33,7 +32,6 @@ export default function DocumentViewerPage() {
     }
   }, [id]);
 
-  // Reset reader mode when navigating away or to a new document
   useEffect(() => {
     return () => {
       setIsReaderMode(false);
@@ -41,16 +39,13 @@ export default function DocumentViewerPage() {
     };
   }, [id, setIsReaderMode]);
 
-
-  const toggleNightMode = () => setIsNightMode(!isNightMode);
-  
   const handleToggleReaderMode = () => {
     const newReaderModeState = !isReaderMode;
     setIsReaderMode(newReaderModeState);
-    if (newReaderModeState) { // Entering reader mode
-      setIsToolbarVisibleInReaderMode(false); // Toolbar initially hidden in reader mode
-    } else { // Exiting reader mode
-      setIsToolbarVisibleInReaderMode(false); 
+    if (newReaderModeState) {
+      setIsToolbarVisibleInReaderMode(false);
+    } else {
+      setIsToolbarVisibleInReaderMode(false);
     }
   };
 
@@ -67,38 +62,12 @@ export default function DocumentViewerPage() {
       </div>
     );
   }
-  
-  return (
-    <div className={cn(
-      "flex flex-col rounded-lg border shadow-md overflow-hidden h-full", 
-      isNightMode ? "dark-viewer-theme" : ""
-      )}>
-      <style jsx global>{`
-        .dark-viewer-theme {
-          --viewer-bg: hsl(270, 15%, 10%);
-          --viewer-text: hsl(210, 30%, 85%);
-          --viewer-border: hsl(270, 15%, 20%);
-        }
-        .dark-viewer-theme .pdf-content-area {
-          background-color: var(--viewer-bg);
-          color: var(--viewer-text);
-          border-color: var(--viewer-border);
-        }
-        .dark-viewer-theme .study-aids-sidebar {
-          background-color: hsl(270, 20%, 15%); 
-          border-left-color: var(--viewer-border);
-        }
-        .dark-viewer-theme .viewer-toolbar {
-           background-color: hsl(270, 20%, 15%);
-           border-bottom-color: var(--viewer-border);
-        }
-      `}</style>
 
+  return (
+    <div className="flex flex-col rounded-lg border shadow-md overflow-hidden h-full bg-card text-card-foreground">
       {!isReaderMode && (
-        <ViewerToolbar 
+        <ViewerToolbar
           documentName={document.name}
-          onToggleNightMode={toggleNightMode}
-          isNightMode={isNightMode}
           onSetViewMode={setViewMode}
           currentViewMode={viewMode}
           onToggleReaderMode={handleToggleReaderMode}
@@ -117,16 +86,14 @@ export default function DocumentViewerPage() {
           <Menu className="h-5 w-5" />
         </Button>
       )}
-      
+
       {isReaderMode && isToolbarVisibleInReaderMode && (
         <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <ViewerToolbar
             documentName={document.name}
-            onToggleNightMode={toggleNightMode}
-            isNightMode={isNightMode}
             onSetViewMode={setViewMode}
             currentViewMode={viewMode}
-            onExitReaderMode={handleToggleReaderMode} 
+            onExitReaderMode={handleToggleReaderMode}
             isReaderModeActive={true}
             onHideToolbarInReaderMode={() => setIsToolbarVisibleInReaderMode(false)}
           />
@@ -136,21 +103,20 @@ export default function DocumentViewerPage() {
       <div className={cn("flex flex-1 overflow-hidden", isReaderMode && isToolbarVisibleInReaderMode ? "pt-16" : "pt-0")}>
         <ScrollArea className="flex-grow h-full">
            <div className={cn(
-              "p-6 pdf-content-area transition-colors duration-300",
-              isNightMode ? "bg-[var(--viewer-bg)] text-[var(--viewer-text)]" : "bg-gray-100 dark:bg-gray-800",
-              viewMode === 'single' && !isReaderMode ? 'max-w-3xl mx-auto' : '', 
-              isReaderMode ? 'max-w-none' : '' 
+              "p-6 transition-colors duration-300 bg-muted text-foreground",
+              viewMode === 'single' && !isReaderMode ? 'max-w-3xl mx-auto' : '',
+              isReaderMode ? 'max-w-none' : ''
             )}
-            style={{minHeight: viewMode === 'single' && !isReaderMode ? '11in' : 'auto'}} 
+            style={{minHeight: viewMode === 'single' && !isReaderMode ? '11in' : 'auto'}}
             >
             <h2 className="text-2xl font-bold font-headline mb-4">{document.name}</h2>
             <p className="text-sm mb-2">This is a mock PDF viewer. The actual PDF content would be rendered here.</p>
             <p className={cn("whitespace-pre-wrap", viewMode === 'continuous' && !isReaderMode ? 'columns-1 md:columns-2 gap-8' : '')}>
               {document.content}
-              {"\\n\\n".repeat(viewMode === 'continuous' || isReaderMode ? 20 : 5)} 
-              End of mock content. 
-              In a real application, this area would display the pages of your PDF document. 
-              You would be able to scroll, zoom, and interact with the content. 
+              {"\\n\\n".repeat(viewMode === 'continuous' || isReaderMode ? 20 : 5)}
+              End of mock content.
+              In a real application, this area would display the pages of your PDF document.
+              You would be able to scroll, zoom, and interact with the content.
               The snipping tool would allow you to select portions of this content to save as an image.
               Annotations like highlighting, underlining, and adding text boxes would modify this view.
             </p>
@@ -158,10 +124,7 @@ export default function DocumentViewerPage() {
         </ScrollArea>
 
         {!isReaderMode && (
-          <div className={cn(
-            "w-80 h-full flex-shrink-0 study-aids-sidebar transition-colors duration-300", 
-            isNightMode ? "bg-[hsl(270,20%,15%)] border-[var(--viewer-border)]" : "bg-card border-l"
-            )}>
+          <div className="w-80 h-full flex-shrink-0 bg-card border-l text-card-foreground">
             <StudyAidsSidebar documentContent={document.content} documentName={document.name} />
           </div>
         )}
