@@ -1,8 +1,10 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
-import AppHeader from '@/components/layout/AppHeader'; // Corrected import path
+import AppHeader from '@/components/layout/AppHeader';
 import { Toaster } from '@/components/ui/toaster';
+import { ReaderModeProvider } from '@/contexts/ReaderModeContext';
 
 
 export const metadata: Metadata = {
@@ -30,11 +32,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AppHeader />
-          <main className="flex-grow container mx-auto px-4 py-8">
-            {children}
-          </main>
-          <Toaster />
+          <ReaderModeProvider>
+            <AppHeader />
+            <main className="flex-grow container mx-auto px-4 py-8">
+              {children}
+            </main>
+            <Toaster />
+          </ReaderModeProvider>
         </ThemeProvider>
       </body>
     </html>

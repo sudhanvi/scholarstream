@@ -1,5 +1,5 @@
 
-"use client"; // This page uses client-side state for view modes
+"use client";
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
@@ -12,6 +12,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button'; 
 import { AlertTriangle, Menu, X } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
+import { useReaderMode } from '@/contexts/ReaderModeContext';
 
 export default function DocumentViewerPage() {
   const params = useParams();
@@ -20,26 +21,34 @@ export default function DocumentViewerPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isNightMode, setIsNightMode] = useState(false);
   const [viewMode, setViewMode] = useState<'single' | 'continuous'>('continuous');
-  const [isReaderMode, setIsReaderMode] = useState(false); 
+  const { isReaderMode, setIsReaderMode } = useReaderMode();
   const [isToolbarVisibleInReaderMode, setIsToolbarVisibleInReaderMode] = useState(false);
 
 
   useEffect(() => {
     if (id) {
-      // In a real app, fetch document by ID from a backend service here.
       const foundDocument = mockPdfDocuments.find(doc => doc.id === id);
       setDocument(foundDocument || null);
       setIsLoading(false);
     }
   }, [id]);
 
+  // Reset reader mode when navigating away or to a new document
+  useEffect(() => {
+    return () => {
+      setIsReaderMode(false);
+      setIsToolbarVisibleInReaderMode(false);
+    };
+  }, [id, setIsReaderMode]);
+
+
   const toggleNightMode = () => setIsNightMode(!isNightMode);
   
-  const toggleReaderMode = () => {
+  const handleToggleReaderMode = () => {
     const newReaderModeState = !isReaderMode;
     setIsReaderMode(newReaderModeState);
     if (newReaderModeState) { // Entering reader mode
-      setIsToolbarVisibleInReaderMode(false);
+      setIsToolbarVisibleInReaderMode(false); // Toolbar initially hidden in reader mode
     } else { // Exiting reader mode
       setIsToolbarVisibleInReaderMode(false); 
     }
@@ -85,7 +94,6 @@ export default function DocumentViewerPage() {
         }
       `}</style>
 
-      {/* Standard Toolbar for Non-Reader Mode */}
       {!isReaderMode && (
         <ViewerToolbar 
           documentName={document.name}
@@ -93,46 +101,45 @@ export default function DocumentViewerPage() {
           isNightMode={isNightMode}
           onSetViewMode={setViewMode}
           currentViewMode={viewMode}
-          onToggleReaderMode={toggleReaderMode} // To enter reader mode
+          onToggleReaderMode={handleToggleReaderMode}
           isReaderModeActive={false}
         />
       )}
 
-      {/* Persistent Toggle for Toolbar in Reader Mode */}
-      {isReaderMode && (
+      {isReaderMode && !isToolbarVisibleInReaderMode && (
         <Button
           variant="outline"
           size="icon"
-          className="fixed top-4 right-4 z-[60] bg-background/80 backdrop-blur-sm hover:bg-background text-foreground" // Increased z-index
-          onClick={() => setIsToolbarVisibleInReaderMode(prev => !prev)}
-          aria-label={isToolbarVisibleInReaderMode ? "Hide Toolbar" : "Show Toolbar"}
+          className="fixed top-4 right-4 z-[60] bg-background/80 backdrop-blur-sm hover:bg-background text-foreground"
+          onClick={() => setIsToolbarVisibleInReaderMode(true)}
+          aria-label="Show Toolbar"
         >
-          {isToolbarVisibleInReaderMode ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          <Menu className="h-5 w-5" />
         </Button>
       )}
       
-      {/* Toolbar that appears IN Reader Mode */}
       {isReaderMode && isToolbarVisibleInReaderMode && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"> {/* Wrapper for positioning and styling */}
+        <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <ViewerToolbar
             documentName={document.name}
             onToggleNightMode={toggleNightMode}
             isNightMode={isNightMode}
             onSetViewMode={setViewMode}
             currentViewMode={viewMode}
-            onExitReaderMode={toggleReaderMode} // To exit reader mode
+            onExitReaderMode={handleToggleReaderMode} 
             isReaderModeActive={true}
+            onHideToolbarInReaderMode={() => setIsToolbarVisibleInReaderMode(false)}
           />
         </div>
       )}
 
-      <div className="flex flex-1 overflow-hidden pt-0"> {/* Ensure no top padding if toolbar is fixed */}
+      <div className={cn("flex flex-1 overflow-hidden", isReaderMode && isToolbarVisibleInReaderMode ? "pt-16" : "pt-0")}>
         <ScrollArea className="flex-grow h-full">
            <div className={cn(
               "p-6 pdf-content-area transition-colors duration-300",
               isNightMode ? "bg-[var(--viewer-bg)] text-[var(--viewer-text)]" : "bg-gray-100 dark:bg-gray-800",
               viewMode === 'single' && !isReaderMode ? 'max-w-3xl mx-auto' : '', 
-              isReaderMode ? 'max-w-none pt-16' : '' // Add padding top if reader mode toolbar is visible and fixed
+              isReaderMode ? 'max-w-none' : '' 
             )}
             style={{minHeight: viewMode === 'single' && !isReaderMode ? '11in' : 'auto'}} 
             >

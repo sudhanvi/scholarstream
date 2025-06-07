@@ -1,3 +1,6 @@
+
+"use client";
+
 import Link from 'next/link';
 import { BookOpenText, UserCircle } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -10,10 +13,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useReaderMode } from '@/contexts/ReaderModeContext';
 
 export default function AppHeader() {
-  // Mock trial days, in a real app this would come from user state
-  const trialDaysLeft = 23;
+  const { isReaderMode } = useReaderMode();
+  const trialDaysLeft = 23; // Mock trial days
+
+  if (isReaderMode) {
+    return null; // Hide entire header in reader mode
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

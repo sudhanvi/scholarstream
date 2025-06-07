@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ShareDialog } from "./ShareDialog";
 import { useToast } from "@/hooks/use-toast";
+import { ThemeToggle } from "@/components/ThemeToggle"; // Import ThemeToggle
 import {
   ZoomIn,
   ZoomOut,
@@ -17,7 +18,8 @@ import {
   Columns,
   ChevronsUpDown,
   Glasses,
-  Minimize // Added Minimize
+  Minimize,
+  X // Added X for hide toolbar button
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -25,6 +27,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from '@/lib/utils';
 
 interface ViewerToolbarProps {
   documentName: string;
@@ -32,9 +35,10 @@ interface ViewerToolbarProps {
   isNightMode: boolean;
   onSetViewMode: (mode: 'single' | 'continuous') => void;
   currentViewMode: 'single' | 'continuous';
-  onToggleReaderMode?: () => void; // For entering reader mode
-  onExitReaderMode?: () => void; // For exiting reader mode
+  onToggleReaderMode?: () => void; 
+  onExitReaderMode?: () => void; 
   isReaderModeActive: boolean; 
+  onHideToolbarInReaderMode?: () => void; // New prop
 }
 
 export function ViewerToolbar({ 
@@ -45,7 +49,8 @@ export function ViewerToolbar({
   currentViewMode,
   onToggleReaderMode,
   onExitReaderMode,
-  isReaderModeActive
+  isReaderModeActive,
+  onHideToolbarInReaderMode
 }: ViewerToolbarProps) {
   const { toast } = useToast();
   const [zoomLevel, setZoomLevel] = useState(100);
@@ -53,16 +58,18 @@ export function ViewerToolbar({
   const handleSnip = () => {
     toast({
       title: "Region Snip Tool (Mock)",
-      description: "In a full version, you could drag to select an area to save as PNG. Advanced text/image selection snipping can be added later.",
+      description: "In a full version, you could drag to select an area to save as PNG. This is for region snipping. Text/image selection snipping from context would be a separate feature.",
     });
   };
 
   const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 10, 200));
   const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 10, 50));
 
-
   return (
-    <div className="bg-card border-b p-2 rounded-t-lg shadow-sm flex flex-wrap items-center justify-between gap-2 viewer-toolbar">
+    <div className={cn(
+        "bg-card border-b p-2 shadow-sm flex flex-wrap items-center justify-between gap-2 viewer-toolbar",
+        isReaderModeActive ? "rounded-none" : "rounded-t-lg" // No rounded corners for fixed reader mode toolbar
+      )}>
       <h2 className="text-sm font-medium font-headline truncate px-2 py-1" title={documentName}>
         {documentName}
       </h2>
@@ -103,10 +110,22 @@ export function ViewerToolbar({
           {isNightMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </Button>
 
+        {/* Reader Mode Toggles / Theme Toggle */}
         {isReaderModeActive ? (
-          <Button variant="ghost" size="icon" onClick={onExitReaderMode} aria-label="Exit Reader Mode">
-            <Minimize className="h-5 w-5" />
-          </Button>
+          <>
+            {onExitReaderMode && (
+              <Button variant="ghost" size="icon" onClick={onExitReaderMode} aria-label="Exit Reader Mode">
+                <Minimize className="h-5 w-5" />
+              </Button>
+            )}
+            <Separator orientation="vertical" className="h-6 mx-1" />
+            <ThemeToggle /> 
+            {onHideToolbarInReaderMode && (
+              <Button variant="ghost" size="icon" onClick={onHideToolbarInReaderMode} aria-label="Hide Toolbar" className="ml-1">
+                <X className="h-5 w-5" />
+              </Button>
+            )}
+          </>
         ) : (
           onToggleReaderMode && (
             <Button variant="ghost" size="icon" onClick={onToggleReaderMode} aria-label="Enter Reader Mode">
