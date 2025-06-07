@@ -20,3 +20,20 @@ export interface TocEntry {
   title: string;
   level: number; // Indentation level, e.g., 1 for main chapter, 2 for sub-section
 }
+
+// New types for AI-Generated Quizzes
+export type QuizQuestionType = 'multiple-choice' | 'short-answer';
+
+export interface QuizQuestion {
+  id: string;
+  questionText: string;
+  questionType: QuizQuestionType;
+  options?: string[]; // For multiple-choice
+  correctAnswer: string; // Text of the correct option for MC, or the answer string for short-answer
+  explanation?: string; // Optional explanation for the answer
+}
+
+export interface GeneratedQuiz {
+  title: string;
+  questions: QuizQuestion[];
+}
