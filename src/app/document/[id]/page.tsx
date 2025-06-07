@@ -10,7 +10,7 @@ import { StudyAidsSidebar } from '@/components/viewer/StudyAidsSidebar';
 import { AiSuggestionsClient } from '@/components/viewer/AiSuggestionsClient';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button'; 
-import { AlertTriangle, Minimize } from 'lucide-react'; 
+import { AlertTriangle, Menu, X } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
 
 export default function DocumentViewerPage() {
@@ -21,6 +21,7 @@ export default function DocumentViewerPage() {
   const [isNightMode, setIsNightMode] = useState(false);
   const [viewMode, setViewMode] = useState<'single' | 'continuous'>('continuous');
   const [isReaderMode, setIsReaderMode] = useState(false); 
+  const [isToolbarVisibleInReaderMode, setIsToolbarVisibleInReaderMode] = useState(false);
 
 
   useEffect(() => {
@@ -33,7 +34,16 @@ export default function DocumentViewerPage() {
   }, [id]);
 
   const toggleNightMode = () => setIsNightMode(!isNightMode);
-  const toggleReaderMode = () => setIsReaderMode(prev => !prev);
+  
+  const toggleReaderMode = () => {
+    const newReaderModeState = !isReaderMode;
+    setIsReaderMode(newReaderModeState);
+    if (newReaderModeState) { // Entering reader mode
+      setIsToolbarVisibleInReaderMode(false);
+    } else { // Exiting reader mode
+      setIsToolbarVisibleInReaderMode(false); 
+    }
+  };
 
   if (isLoading) {
     return <div className="flex justify-center items-center h-full"><p>Loading document...</p></div>;
@@ -51,10 +61,8 @@ export default function DocumentViewerPage() {
   
   return (
     <div className={cn(
-      "flex flex-col rounded-lg border shadow-md overflow-hidden h-full", // Use h-full to fill parent main area
+      "flex flex-col rounded-lg border shadow-md overflow-hidden h-full", 
       isNightMode ? "dark-viewer-theme" : ""
-      // Reader mode will hide internal toolbars, making content area expand.
-      // No specific height change needed here for reader mode if parent controls height well.
       )}>
       <style jsx global>{`
         .dark-viewer-theme {
@@ -68,7 +76,7 @@ export default function DocumentViewerPage() {
           border-color: var(--viewer-border);
         }
         .dark-viewer-theme .study-aids-sidebar {
-          background-color: hsl(270, 20%, 15%); /* Slightly lighter than viewer bg */
+          background-color: hsl(270, 20%, 15%); 
           border-left-color: var(--viewer-border);
         }
         .dark-viewer-theme .viewer-toolbar {
@@ -77,6 +85,7 @@ export default function DocumentViewerPage() {
         }
       `}</style>
 
+      {/* Standard Toolbar for Non-Reader Mode */}
       {!isReaderMode && (
         <ViewerToolbar 
           documentName={document.name}
@@ -84,19 +93,49 @@ export default function DocumentViewerPage() {
           isNightMode={isNightMode}
           onSetViewMode={setViewMode}
           currentViewMode={viewMode}
-          onToggleReaderMode={toggleReaderMode}
+          onToggleReaderMode={toggleReaderMode} // To enter reader mode
+          isReaderModeActive={false}
         />
       )}
 
-      <div className="flex flex-1 overflow-hidden">
+      {/* Persistent Toggle for Toolbar in Reader Mode */}
+      {isReaderMode && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="fixed top-4 right-4 z-[60] bg-background/80 backdrop-blur-sm hover:bg-background text-foreground" // Increased z-index
+          onClick={() => setIsToolbarVisibleInReaderMode(prev => !prev)}
+          aria-label={isToolbarVisibleInReaderMode ? "Hide Toolbar" : "Show Toolbar"}
+        >
+          {isToolbarVisibleInReaderMode ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </Button>
+      )}
+      
+      {/* Toolbar that appears IN Reader Mode */}
+      {isReaderMode && isToolbarVisibleInReaderMode && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"> {/* Wrapper for positioning and styling */}
+          <ViewerToolbar
+            documentName={document.name}
+            onToggleNightMode={toggleNightMode}
+            isNightMode={isNightMode}
+            onSetViewMode={setViewMode}
+            currentViewMode={viewMode}
+            onExitReaderMode={toggleReaderMode} // To exit reader mode
+            isReaderModeActive={true}
+            // Pass other necessary props for reader mode toolbar
+          />
+        </div>
+      )}
+
+      <div className="flex flex-1 overflow-hidden pt-0"> {/* Ensure no top padding if toolbar is fixed */}
         <ScrollArea className="flex-grow h-full">
            <div className={cn(
               "p-6 pdf-content-area transition-colors duration-300",
               isNightMode ? "bg-[var(--viewer-bg)] text-[var(--viewer-text)]" : "bg-gray-100 dark:bg-gray-800",
               viewMode === 'single' && !isReaderMode ? 'max-w-3xl mx-auto' : '', 
-              isReaderMode ? 'max-w-none' : '' 
+              isReaderMode ? 'max-w-none pt-16' : '' // Add padding top if reader mode toolbar is visible and fixed
             )}
-            style={{minHeight: viewMode === 'single' ? '11in' : 'auto'}} 
+            style={{minHeight: viewMode === 'single' && !isReaderMode ? '11in' : 'auto'}} 
             >
             <h2 className="text-2xl font-bold font-headline mb-4">{document.name}</h2>
             <p className="text-sm mb-2">This is a mock PDF viewer. The actual PDF content would be rendered here.</p>
@@ -126,18 +165,6 @@ export default function DocumentViewerPage() {
         <div className="p-2 border-t">
           <AiSuggestionsClient documentContent={document.content} documentTitle={document.name} />
         </div>
-      )}
-      
-      {isReaderMode && (
-        <Button
-          variant="outline"
-          size="icon"
-          className="fixed top-20 right-6 z-50 bg-background/80 backdrop-blur-sm hover:bg-background text-foreground"
-          onClick={toggleReaderMode}
-          aria-label="Exit Reader Mode"
-        >
-          <Minimize className="h-5 w-5" />
-        </Button>
       )}
     </div>
   );

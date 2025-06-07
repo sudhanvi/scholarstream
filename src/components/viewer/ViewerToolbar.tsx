@@ -16,7 +16,8 @@ import {
   File,
   Columns,
   ChevronsUpDown,
-  Glasses // Added Glasses icon
+  Glasses,
+  Minimize // Added Minimize
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -31,7 +32,9 @@ interface ViewerToolbarProps {
   isNightMode: boolean;
   onSetViewMode: (mode: 'single' | 'continuous') => void;
   currentViewMode: 'single' | 'continuous';
-  onToggleReaderMode: () => void; // New prop for reader mode
+  onToggleReaderMode?: () => void; // For entering reader mode
+  onExitReaderMode?: () => void; // For exiting reader mode
+  isReaderModeActive: boolean; 
 }
 
 export function ViewerToolbar({ 
@@ -40,15 +43,17 @@ export function ViewerToolbar({
   isNightMode,
   onSetViewMode,
   currentViewMode,
-  onToggleReaderMode // Destructure new prop
+  onToggleReaderMode,
+  onExitReaderMode,
+  isReaderModeActive
 }: ViewerToolbarProps) {
   const { toast } = useToast();
   const [zoomLevel, setZoomLevel] = useState(100);
 
   const handleSnip = () => {
     toast({
-      title: "Snip Tool Activated (Mock)",
-      description: "Drag to select a region to save as PNG.",
+      title: "Region Snip Tool (Mock)",
+      description: "In a full version, you could drag to select an area to save as PNG. Advanced text/image selection snipping can be added later.",
     });
   };
 
@@ -98,9 +103,17 @@ export function ViewerToolbar({
           {isNightMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </Button>
 
-        <Button variant="ghost" size="icon" onClick={onToggleReaderMode} aria-label="Toggle Reader Mode">
-          <Glasses className="h-5 w-5" />
-        </Button>
+        {isReaderModeActive ? (
+          <Button variant="ghost" size="icon" onClick={onExitReaderMode} aria-label="Exit Reader Mode">
+            <Minimize className="h-5 w-5" />
+          </Button>
+        ) : (
+          onToggleReaderMode && (
+            <Button variant="ghost" size="icon" onClick={onToggleReaderMode} aria-label="Enter Reader Mode">
+              <Glasses className="h-5 w-5" />
+            </Button>
+          )
+        )}
 
         <Separator orientation="vertical" className="h-6 mx-1" />
 
