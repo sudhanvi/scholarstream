@@ -1,3 +1,4 @@
+
 "use client"; // This page uses client-side state for view modes
 
 import { useEffect, useState } from 'react';
@@ -8,7 +9,8 @@ import { ViewerToolbar } from '@/components/viewer/ViewerToolbar';
 import { StudyAidsSidebar } from '@/components/viewer/StudyAidsSidebar';
 import { AiSuggestionsClient } from '@/components/viewer/AiSuggestionsClient';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button'; // Added Button for reader mode exit
+import { AlertTriangle, Minimize } from 'lucide-react'; // Added Minimize
 import { cn } from '@/lib/utils';
 
 export default function DocumentViewerPage() {
@@ -18,6 +20,7 @@ export default function DocumentViewerPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isNightMode, setIsNightMode] = useState(false);
   const [viewMode, setViewMode] = useState<'single' | 'continuous'>('continuous');
+  const [isReaderMode, setIsReaderMode] = useState(false); // New state for reader mode
 
 
   useEffect(() => {
@@ -27,6 +30,9 @@ export default function DocumentViewerPage() {
       setIsLoading(false);
     }
   }, [id]);
+
+  const toggleNightMode = () => setIsNightMode(!isNightMode);
+  const toggleReaderMode = () => setIsReaderMode(prev => !prev);
 
   if (isLoading) {
     return <div className="flex justify-center items-center h-full"><p>Loading document...</p></div>;
@@ -42,10 +48,17 @@ export default function DocumentViewerPage() {
     );
   }
   
-  const toggleNightMode = () => setIsNightMode(!isNightMode);
-
   return (
-    <div className={cn("flex flex-col h-[calc(100vh-10rem)] max-h-[calc(100vh-10rem)] overflow-hidden rounded-lg border shadow-md", isNightMode ? "dark-viewer-theme" : "")}>
+    <div className={cn(
+      "flex flex-col rounded-lg border shadow-md overflow-hidden", 
+      isNightMode ? "dark-viewer-theme" : "",
+      // Height is managed by parent in layout, so it fills available space
+      // Reader mode will hide internal toolbars, making content area expand
+      isReaderMode ? "h-full" : "h-[calc(100vh-10rem)] max-h-[calc(100vh-10rem)]" 
+      // Using h-full in reader mode to try and take parent's full height.
+      // The h-[calc(100vh-10rem)] is for when AppHeader etc. are visible from layout.
+      // If reader mode were to hide AppHeader, this div would need to be `fixed inset-0 z-[very-high]`
+      )}>
       <style jsx global>{`
         .dark-viewer-theme {
           --viewer-bg: hsl(270, 15%, 10%);
@@ -67,29 +80,32 @@ export default function DocumentViewerPage() {
         }
       `}</style>
 
-      <ViewerToolbar 
-        documentName={document.name}
-        onToggleNightMode={toggleNightMode}
-        isNightMode={isNightMode}
-        onSetViewMode={setViewMode}
-        currentViewMode={viewMode}
-      />
+      {!isReaderMode && (
+        <ViewerToolbar 
+          documentName={document.name}
+          onToggleNightMode={toggleNightMode}
+          isNightMode={isNightMode}
+          onSetViewMode={setViewMode}
+          currentViewMode={viewMode}
+          onToggleReaderMode={toggleReaderMode} // Pass toggle function
+        />
+      )}
+
       <div className="flex flex-1 overflow-hidden">
-        {/* Main PDF Content Area (Mock) */}
         <ScrollArea className="flex-grow h-full">
            <div className={cn(
               "p-6 pdf-content-area transition-colors duration-300",
               isNightMode ? "bg-[var(--viewer-bg)] text-[var(--viewer-text)]" : "bg-gray-100 dark:bg-gray-800",
-              viewMode === 'single' ? 'max-w-3xl mx-auto' : ''
+              viewMode === 'single' && !isReaderMode ? 'max-w-3xl mx-auto' : '', // single page view narrower if not reader mode
+              isReaderMode ? 'max-w-none' : '' // reader mode full width
             )}
             style={{minHeight: viewMode === 'single' ? '11in' : 'auto'}} // Mock page height
             >
             <h2 className="text-2xl font-bold font-headline mb-4">{document.name}</h2>
             <p className="text-sm mb-2">This is a mock PDF viewer. The actual PDF content would be rendered here.</p>
-            <p className={cn("whitespace-pre-wrap", viewMode === 'continuous' ? 'columns-1 md:columns-2 gap-8' : '')}>
+            <p className={cn("whitespace-pre-wrap", viewMode === 'continuous' && !isReaderMode ? 'columns-1 md:columns-2 gap-8' : '')}>
               {document.content}
-              {/* Add more mock content to demonstrate scrolling */}
-              {"\n\n".repeat(viewMode === 'continuous' ? 20 : 5)} 
+              {"\\n\\n".repeat(viewMode === 'continuous' || isReaderMode ? 20 : 5)} 
               End of mock content. 
               In a real application, this area would display the pages of your PDF document. 
               You would be able to scroll, zoom, and interact with the content. 
@@ -99,14 +115,33 @@ export default function DocumentViewerPage() {
           </div>
         </ScrollArea>
 
-        {/* Study Aids Sidebar */}
-        <div className={cn("w-80 h-full flex-shrink-0 study-aids-sidebar transition-colors duration-300", isNightMode ? "bg-[hsl(270,20%,15%)] border-[var(--viewer-border)]" : "bg-card border-l")}>
-          <StudyAidsSidebar />
+        {!isReaderMode && (
+          <div className={cn(
+            "w-80 h-full flex-shrink-0 study-aids-sidebar transition-colors duration-300", 
+            isNightMode ? "bg-[hsl(270,20%,15%)] border-[var(--viewer-border)]" : "bg-card border-l"
+            )}>
+            <StudyAidsSidebar />
+          </div>
+        )}
+      </div>
+
+      {!isReaderMode && (
+        <div className="p-2 border-t">
+          <AiSuggestionsClient documentContent={document.content} documentTitle={document.name} />
         </div>
-      </div>
-      <div className="p-2 border-t">
-        <AiSuggestionsClient documentContent={document.content} documentTitle={document.name} />
-      </div>
+      )}
+      
+      {isReaderMode && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="fixed top-20 right-6 z-50 bg-background/80 backdrop-blur-sm hover:bg-background text-foreground"
+          onClick={toggleReaderMode}
+          aria-label="Exit Reader Mode"
+        >
+          <Minimize className="h-5 w-5" />
+        </Button>
+      )}
     </div>
   );
 }

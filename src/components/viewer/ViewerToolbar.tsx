@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -14,9 +15,8 @@ import {
   Sun,
   File,
   Columns,
-  Minus,
-  Plus,
-  ChevronsUpDown
+  ChevronsUpDown,
+  Glasses // Added Glasses icon
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -31,6 +31,7 @@ interface ViewerToolbarProps {
   isNightMode: boolean;
   onSetViewMode: (mode: 'single' | 'continuous') => void;
   currentViewMode: 'single' | 'continuous';
+  onToggleReaderMode: () => void; // New prop for reader mode
 }
 
 export function ViewerToolbar({ 
@@ -38,7 +39,8 @@ export function ViewerToolbar({
   onToggleNightMode, 
   isNightMode,
   onSetViewMode,
-  currentViewMode 
+  currentViewMode,
+  onToggleReaderMode // Destructure new prop
 }: ViewerToolbarProps) {
   const { toast } = useToast();
   const [zoomLevel, setZoomLevel] = useState(100);
@@ -55,7 +57,7 @@ export function ViewerToolbar({
 
 
   return (
-    <div className="bg-card border-b p-2 rounded-t-lg shadow-sm flex flex-wrap items-center justify-between gap-2">
+    <div className="bg-card border-b p-2 rounded-t-lg shadow-sm flex flex-wrap items-center justify-between gap-2 viewer-toolbar">
       <h2 className="text-sm font-medium font-headline truncate px-2 py-1" title={documentName}>
         {documentName}
       </h2>
@@ -94,6 +96,10 @@ export function ViewerToolbar({
         
         <Button variant="ghost" size="icon" onClick={onToggleNightMode} aria-label={isNightMode ? "Disable Night Mode" : "Enable Night Mode"}>
           {isNightMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+        </Button>
+
+        <Button variant="ghost" size="icon" onClick={onToggleReaderMode} aria-label="Toggle Reader Mode">
+          <Glasses className="h-5 w-5" />
         </Button>
 
         <Separator orientation="vertical" className="h-6 mx-1" />
