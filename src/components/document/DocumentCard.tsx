@@ -11,16 +11,32 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { formatDistanceToNow, parseISO } from 'date-fns';
+import { useEffect, useState } from 'react';
 
 interface DocumentCardProps {
   document: PdfDocument;
 }
 
 export function DocumentCard({ document }: DocumentCardProps) {
+  const [lastOpenedFormatted, setLastOpenedFormatted] = useState('');
+
+  useEffect(() => {
+    if (document.lastOpened) {
+      try {
+        const date = parseISO(document.lastOpened);
+        setLastOpenedFormatted(formatDistanceToNow(date, { addSuffix: true }));
+      } catch (error) {
+        console.error("Error parsing date for document card:", error);
+        setLastOpenedFormatted(document.lastOpened); // Fallback to raw string
+      }
+    }
+  }, [document.lastOpened]);
+
   return (
     <Card className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardHeader className="p-0">
-        <Link href={`/document/${document.id}`} className="block">
+        <Link href={`/document/${document.id}`} className="block" aria-label={`Open document ${document.name}`}>
           <Image
             src={document.thumbnailUrl}
             alt={`Thumbnail for ${document.name}`}
@@ -32,7 +48,7 @@ export function DocumentCard({ document }: DocumentCardProps) {
         </Link>
       </CardHeader>
       <CardContent className="p-4 flex-grow">
-        <Link href={`/document/${document.id}`}>
+        <Link href={`/document/${document.id}`} aria-label={`Open document ${document.name}`}>
           <CardTitle className="font-headline text-lg mb-1 hover:text-primary transition-colors truncate" title={document.name}>
             {document.name}
           </CardTitle>
@@ -41,23 +57,18 @@ export function DocumentCard({ document }: DocumentCardProps) {
           <FileText className="w-3 h-3 mr-1 flex-shrink-0" /> {document.fileSize}
         </CardDescription>
         <CardDescription className="text-xs text-muted-foreground flex items-center mt-1">
-          <Clock className="w-3 h-3 mr-1 flex-shrink-0" /> Last opened: {document.lastOpened}
+          <Clock className="w-3 h-3 mr-1 flex-shrink-0" /> Last opened: {lastOpenedFormatted}
         </CardDescription>
       </CardContent>
-      <CardFooter className="p-4 flex justify-between items-center border-t">
-        <Link href={`/document/${document.id}`} passHref>
-          <Button variant="outline" size="sm">Open</Button>
-        </Link>
+      <CardFooter className="p-4 flex justify-end items-center border-t">
         <div className="flex items-center space-x-1">
-          <Button variant="ghost" size="icon" className="w-8 h-8">
+          <Button variant="ghost" size="icon" className="w-8 h-8" aria-label={document.isFavorite ? "Remove from favorites" : "Add to favorites"}>
             <Star className={`w-4 h-4 ${document.isFavorite ? "text-yellow-500 fill-yellow-400" : "text-muted-foreground"}`} />
-            <span className="sr-only">Favorite</span>
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="w-8 h-8">
+              <Button variant="ghost" size="icon" className="w-8 h-8" aria-label="More options">
                 <MoreVertical className="w-4 h-4" />
-                <span className="sr-only">More options</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

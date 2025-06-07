@@ -9,8 +9,8 @@ import { ViewerToolbar } from '@/components/viewer/ViewerToolbar';
 import { StudyAidsSidebar } from '@/components/viewer/StudyAidsSidebar';
 import { AiSuggestionsClient } from '@/components/viewer/AiSuggestionsClient';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Button } from '@/components/ui/button'; // Added Button for reader mode exit
-import { AlertTriangle, Minimize } from 'lucide-react'; // Added Minimize
+import { Button } from '@/components/ui/button'; 
+import { AlertTriangle, Minimize } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
 
 export default function DocumentViewerPage() {
@@ -20,11 +20,12 @@ export default function DocumentViewerPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isNightMode, setIsNightMode] = useState(false);
   const [viewMode, setViewMode] = useState<'single' | 'continuous'>('continuous');
-  const [isReaderMode, setIsReaderMode] = useState(false); // New state for reader mode
+  const [isReaderMode, setIsReaderMode] = useState(false); 
 
 
   useEffect(() => {
     if (id) {
+      // In a real app, fetch document by ID from a backend service here.
       const foundDocument = mockPdfDocuments.find(doc => doc.id === id);
       setDocument(foundDocument || null);
       setIsLoading(false);
@@ -50,14 +51,10 @@ export default function DocumentViewerPage() {
   
   return (
     <div className={cn(
-      "flex flex-col rounded-lg border shadow-md overflow-hidden", 
-      isNightMode ? "dark-viewer-theme" : "",
-      // Height is managed by parent in layout, so it fills available space
-      // Reader mode will hide internal toolbars, making content area expand
-      isReaderMode ? "h-full" : "h-[calc(100vh-10rem)] max-h-[calc(100vh-10rem)]" 
-      // Using h-full in reader mode to try and take parent's full height.
-      // The h-[calc(100vh-10rem)] is for when AppHeader etc. are visible from layout.
-      // If reader mode were to hide AppHeader, this div would need to be `fixed inset-0 z-[very-high]`
+      "flex flex-col rounded-lg border shadow-md overflow-hidden h-full", // Use h-full to fill parent main area
+      isNightMode ? "dark-viewer-theme" : ""
+      // Reader mode will hide internal toolbars, making content area expand.
+      // No specific height change needed here for reader mode if parent controls height well.
       )}>
       <style jsx global>{`
         .dark-viewer-theme {
@@ -87,7 +84,7 @@ export default function DocumentViewerPage() {
           isNightMode={isNightMode}
           onSetViewMode={setViewMode}
           currentViewMode={viewMode}
-          onToggleReaderMode={toggleReaderMode} // Pass toggle function
+          onToggleReaderMode={toggleReaderMode}
         />
       )}
 
@@ -96,10 +93,10 @@ export default function DocumentViewerPage() {
            <div className={cn(
               "p-6 pdf-content-area transition-colors duration-300",
               isNightMode ? "bg-[var(--viewer-bg)] text-[var(--viewer-text)]" : "bg-gray-100 dark:bg-gray-800",
-              viewMode === 'single' && !isReaderMode ? 'max-w-3xl mx-auto' : '', // single page view narrower if not reader mode
-              isReaderMode ? 'max-w-none' : '' // reader mode full width
+              viewMode === 'single' && !isReaderMode ? 'max-w-3xl mx-auto' : '', 
+              isReaderMode ? 'max-w-none' : '' 
             )}
-            style={{minHeight: viewMode === 'single' ? '11in' : 'auto'}} // Mock page height
+            style={{minHeight: viewMode === 'single' ? '11in' : 'auto'}} 
             >
             <h2 className="text-2xl font-bold font-headline mb-4">{document.name}</h2>
             <p className="text-sm mb-2">This is a mock PDF viewer. The actual PDF content would be rendered here.</p>

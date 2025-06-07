@@ -3,11 +3,13 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Input } from '@/components/ui/input'; // Added Input
+import { Label } from '@/components/ui/label'; // Added Label
 import { suggestRelatedContent } from '@/ai/flows/suggest-related-content';
 import type { SuggestRelatedContentInput, SuggestRelatedContentOutput } from '@/ai/flows/suggest-related-content';
-import { Lightbulb, ExternalLink, Loader2, X } from 'lucide-react'; // Added X
+import { Lightbulb, ExternalLink, Loader2, X } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 
@@ -20,17 +22,23 @@ export function AiSuggestionsClient({ documentContent, documentTitle }: AiSugges
   const [suggestions, setSuggestions] = useState<SuggestRelatedContentOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isCardOpen, setIsCardOpen] = useState(true); // New state for card visibility
+  const [isCardOpen, setIsCardOpen] = useState(true);
+  const [customQuery, setCustomQuery] = useState(''); // New state for user's custom query
 
   const handleFetchSuggestions = async () => {
     setIsLoading(true);
     setError(null);
     setSuggestions(null);
-    if (!isCardOpen) setIsCardOpen(true); // Ensure card is open when fetching
+    if (!isCardOpen) setIsCardOpen(true); 
     try {
+      let queryForAI = `Find content related to "${documentTitle}"`;
+      if (customQuery.trim()) {
+        queryForAI = `Regarding "${documentTitle}", ${customQuery.trim()}`;
+      }
+
       const input: SuggestRelatedContentInput = {
         documentContent: documentContent,
-        userQuery: `Find content related to "${documentTitle}"`,
+        userQuery: queryForAI,
       };
       const result = await suggestRelatedContent(input);
       setSuggestions(result);
@@ -47,14 +55,11 @@ export function AiSuggestionsClient({ documentContent, documentTitle }: AiSugges
     setSuggestions(null);
     setError(null);
     setIsLoading(false);
+    setCustomQuery(''); // Reset custom query
   };
 
   const handleShowCard = () => {
     setIsCardOpen(true);
-    // Optionally, fetch suggestions immediately when shown if they are not already loaded
-    // if (!suggestions && !isLoading) {
-    //   handleFetchSuggestions();
-    // }
   };
 
   if (!isCardOpen) {
@@ -77,7 +82,7 @@ export function AiSuggestionsClient({ documentContent, documentTitle }: AiSugges
             AI-Powered Suggestions
           </CardTitle>
           <CardDescription>
-            Discover related PDFs and learning materials based on the current document.
+            Discover related materials. You can refine the search below.
           </CardDescription>
         </div>
         <Button variant="ghost" size="icon" onClick={handleCloseCard} aria-label="Close AI Suggestions" className="ml-auto">
@@ -85,6 +90,16 @@ export function AiSuggestionsClient({ documentContent, documentTitle }: AiSugges
         </Button>
       </CardHeader>
       <CardContent>
+        <div className="space-y-2 mb-4">
+          <Label htmlFor="ai-custom-query">Refine your search (optional):</Label>
+          <Input 
+            id="ai-custom-query"
+            placeholder="e.g., 'explain quantum entanglement applications'"
+            value={customQuery}
+            onChange={(e) => setCustomQuery(e.target.value)}
+          />
+        </div>
+
         <Button onClick={handleFetchSuggestions} disabled={isLoading} className="w-full mb-4">
           {isLoading ? (
             <>
@@ -104,7 +119,7 @@ export function AiSuggestionsClient({ documentContent, documentTitle }: AiSugges
         )}
 
         {suggestions && suggestions.length === 0 && !isLoading && (
-          <p className="text-sm text-muted-foreground text-center">No suggestions found at this time.</p>
+          <p className="text-sm text-muted-foreground text-center">No suggestions found for this query.</p>
         )}
 
         {suggestions && suggestions.length > 0 && (

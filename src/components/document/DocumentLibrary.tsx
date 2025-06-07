@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { mockPdfDocuments } from '@/constants/mockData';
 import type { PdfDocument } from '@/types';
 import { DocumentCard } from './DocumentCard';
@@ -15,12 +16,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { parseISO } from 'date-fns';
 
 export function DocumentLibrary() {
-  const [documents, setDocuments] = useState<PdfDocument[]>(mockPdfDocuments);
+  const [documents, setDocuments] = useState<PdfDocument[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState<'all' | 'recent' | 'favorites'>('all');
   const [sortOrder, setSortOrder] = useState<'name_asc' | 'name_desc' | 'lastOpened_asc' | 'lastOpened_desc'>('lastOpened_desc');
+
+  useEffect(() => {
+    // In a real app, fetch documents from a backend/database here.
+    // For now, we continue to use mock data.
+    setDocuments(mockPdfDocuments);
+  }, []);
 
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,20 +39,23 @@ export function DocumentLibrary() {
     .filter(doc => {
       const matchesSearch = doc.name.toLowerCase().includes(searchTerm);
       if (filter === 'favorites') return matchesSearch && doc.isFavorite;
-      // 'recent' filter logic would need actual date parsing; for now, it's a placeholder
+      // 'recent' filter logic might need refinement based on actual date ranges.
+      // For now, it shows all that match search term, as sorting handles recency.
       return matchesSearch;
     })
     .sort((a, b) => {
+      const dateA = parseISO(a.lastOpened);
+      const dateB = parseISO(b.lastOpened);
+
       switch (sortOrder) {
         case 'name_asc':
           return a.name.localeCompare(b.name);
         case 'name_desc':
           return b.name.localeCompare(a.name);
-        // Proper date sorting would require converting lastOpened to Date objects
         case 'lastOpened_asc': 
-          return a.lastOpened.localeCompare(b.lastOpened); // Simplified sort
+          return dateA.getTime() - dateB.getTime();
         case 'lastOpened_desc':
-          return b.lastOpened.localeCompare(a.lastOpened); // Simplified sort
+          return dateB.getTime() - dateA.getTime();
         default:
           return 0;
       }
