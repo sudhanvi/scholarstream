@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -6,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Bookmarks, MessageSquare, PlusCircle, Trash2 } from "lucide-react";
+import { Search, Bookmark, MessageSquare, PlusCircle, Trash2 } from "lucide-react";
 
 // Mock data types
-interface Bookmark {
+interface BookmarkItem { // Renamed to avoid conflict with imported Bookmark icon
   id: string;
   page: number;
   label: string;
@@ -24,7 +25,7 @@ interface StudyNote {
 export function StudyAidsSidebar() {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<string[]>([]); // Mock search results
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>([
+  const [bookmarks, setBookmarks] = useState<BookmarkItem[]>([
     { id: "b1", page: 5, label: "Key Concept Intro" },
     { id: "b2", page: 12, label: "Important Diagram" },
   ]);
@@ -48,7 +49,7 @@ export function StudyAidsSidebar() {
 
   const addBookmark = () => {
     // Mock add bookmark - in real app, would get current page
-    const newBookmark: Bookmark = {
+    const newBookmark: BookmarkItem = {
       id: `b${bookmarks.length + 1}`,
       page: Math.floor(Math.random() * 20) + 1, // Random page for mock
       label: `New Bookmark page ${Math.floor(Math.random() * 20) + 1}`,
@@ -109,7 +110,7 @@ export function StudyAidsSidebar() {
 
         <AccordionItem value="bookmarks">
           <AccordionTrigger className="font-headline text-base">
-            <Bookmarks className="mr-2 h-5 w-5" /> Bookmarks
+            <Bookmark className="mr-2 h-5 w-5" /> Bookmarks
           </AccordionTrigger>
           <AccordionContent className="space-y-2">
             <Button variant="outline" size="sm" onClick={addBookmark} className="w-full">
