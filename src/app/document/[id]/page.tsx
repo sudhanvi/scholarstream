@@ -122,7 +122,6 @@ export default function DocumentViewerPage() {
             currentViewMode={viewMode}
             onExitReaderMode={toggleReaderMode} // To exit reader mode
             isReaderModeActive={true}
-            // Pass other necessary props for reader mode toolbar
           />
         </div>
       )}
@@ -156,7 +155,7 @@ export default function DocumentViewerPage() {
             "w-80 h-full flex-shrink-0 study-aids-sidebar transition-colors duration-300", 
             isNightMode ? "bg-[hsl(270,20%,15%)] border-[var(--viewer-border)]" : "bg-card border-l"
             )}>
-            <StudyAidsSidebar />
+            <StudyAidsSidebar documentContent={document.content} documentName={document.name} />
           </div>
         )}
       </div>

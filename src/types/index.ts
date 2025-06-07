@@ -1,3 +1,4 @@
+
 export interface PdfDocument {
   id: string;
   name: string;
@@ -13,4 +14,9 @@ export interface SuggestedResource {
   title: string;
   url: string;
   description: string;
+}
+
+export interface TocEntry {
+  title: string;
+  level: number; // Indentation level, e.g., 1 for main chapter, 2 for sub-section
 }
