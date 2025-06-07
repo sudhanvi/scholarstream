@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -25,7 +26,7 @@ export type SuggestRelatedContentInput = z.infer<typeof SuggestRelatedContentInp
 
 const SuggestedResourceSchema = z.object({
   title: z.string().describe('Title of the suggested resource.'),
-  url: z.string().url().describe('URL of the suggested resource.'),
+  url: z.string().describe('URL of the suggested resource. Should be a valid web address.'),
   description: z.string().describe('A brief description of the resource.'),
 });
 
