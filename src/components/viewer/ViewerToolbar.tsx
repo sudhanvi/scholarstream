@@ -1,0 +1,112 @@
+"use client";
+
+import { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { ShareDialog } from "./ShareDialog";
+import { useToast } from "@/hooks/use-toast";
+import {
+  ZoomIn,
+  ZoomOut,
+  Scissors,
+  Share2,
+  Moon,
+  Sun,
+  File,
+  Columns,
+  Minus,
+  Plus,
+  ChevronsUpDown
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+interface ViewerToolbarProps {
+  documentName: string;
+  onToggleNightMode: () => void;
+  isNightMode: boolean;
+  onSetViewMode: (mode: 'single' | 'continuous') => void;
+  currentViewMode: 'single' | 'continuous';
+}
+
+export function ViewerToolbar({ 
+  documentName, 
+  onToggleNightMode, 
+  isNightMode,
+  onSetViewMode,
+  currentViewMode 
+}: ViewerToolbarProps) {
+  const { toast } = useToast();
+  const [zoomLevel, setZoomLevel] = useState(100);
+
+  const handleSnip = () => {
+    toast({
+      title: "Snip Tool Activated (Mock)",
+      description: "Drag to select a region to save as PNG.",
+    });
+  };
+
+  const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 10, 200));
+  const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 10, 50));
+
+
+  return (
+    <div className="bg-card border-b p-2 rounded-t-lg shadow-sm flex flex-wrap items-center justify-between gap-2">
+      <h2 className="text-sm font-medium font-headline truncate px-2 py-1" title={documentName}>
+        {documentName}
+      </h2>
+      <div className="flex items-center gap-1 flex-wrap">
+        <Button variant="ghost" size="icon" onClick={handleZoomOut} aria-label="Zoom Out">
+          <ZoomOut className="h-5 w-5" />
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="w-20 text-xs">
+              {zoomLevel}% <ChevronsUpDown className="ml-1 h-3 w-3"/>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {[50, 75, 100, 125, 150, 200].map(level => (
+              <DropdownMenuItem key={level} onSelect={() => setZoomLevel(level)}>
+                {level}%
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <Button variant="ghost" size="icon" onClick={handleZoomIn} aria-label="Zoom In">
+          <ZoomIn className="h-5 w-5" />
+        </Button>
+        
+        <Separator orientation="vertical" className="h-6 mx-1" />
+
+        <Button variant="ghost" size="icon" onClick={() => onSetViewMode('single')} aria-label="Single Page View" className={currentViewMode === 'single' ? 'bg-accent' : ''}>
+          <File className="h-5 w-5" />
+        </Button>
+        <Button variant="ghost" size="icon" onClick={() => onSetViewMode('continuous')} aria-label="Continuous Scroll View" className={currentViewMode === 'continuous' ? 'bg-accent' : ''}>
+          <Columns className="h-5 w-5" />
+        </Button>
+        
+        <Separator orientation="vertical" className="h-6 mx-1" />
+        
+        <Button variant="ghost" size="icon" onClick={onToggleNightMode} aria-label={isNightMode ? "Disable Night Mode" : "Enable Night Mode"}>
+          {isNightMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+        </Button>
+
+        <Separator orientation="vertical" className="h-6 mx-1" />
+
+        <Button variant="ghost" size="icon" onClick={handleSnip} aria-label="Snip Tool">
+          <Scissors className="h-5 w-5" />
+        </Button>
+        <ShareDialog documentName={documentName}>
+          <Button variant="ghost" size="icon" aria-label="Share Document">
+            <Share2 className="h-5 w-5" />
+          </Button>
+        </ShareDialog>
+      </div>
+    </div>
+  );
+}
