@@ -14,11 +14,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useReaderMode } from '@/contexts/ReaderModeContext';
-import { useToast } from '@/hooks/use-toast'; // Added useToast
+import { useToast } from '@/hooks/use-toast';
 
 export default function AppHeader() {
   const { isReaderMode } = useReaderMode();
-  const { toast } = useToast(); // Initialize useToast
+  const { toast } = useToast();
   const trialDaysLeft = 23; // Mock trial days. Set to 0 or negative to see "Trial Ended" state.
 
   if (isReaderMode) {
@@ -38,7 +38,7 @@ export default function AppHeader() {
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <BookOpenText className="h-6 w-6 text-primary" />
           <span className="font-bold font-headline text-xl sm:inline-block">
-            ScholarStream
+            Scholar Stream
           </span>
         </Link>
         

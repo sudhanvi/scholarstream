@@ -1,6 +1,7 @@
-# ScholarStream
 
-ScholarStream is a student-centric PDF toolkit designed to enhance the study experience. It allows users to import, view, and interact with PDF documents, offering features like a searchable document library, AI-powered content suggestions, and study aids.
+# Scholar Stream
+
+Scholar Stream is a student-centric PDF toolkit designed to enhance the study experience. It allows users to import, view, and interact with PDF documents, offering features like a searchable document library, AI-powered content suggestions, and study aids.
 
 ## Core Features:
 
@@ -8,14 +9,16 @@ ScholarStream is a student-centric PDF toolkit designed to enhance the study exp
 *   **Document Library**: A clear list view of your documents, showing thumbnails, file size, and "Last opened" metadata for easy navigation and sorting.
 *   **PDF Viewing**:
     *   Single-page and continuous scroll viewing modes.
-    *   Night mode toggle for comfortable reading in low light.
     *   Reader mode for a distraction-free experience.
 *   **Snip Tool (Mocked)**: A button to simulate selecting a page region to save as a PNG.
 *   **AI-Powered Content Suggestion**: Based on the content of the current document, the app suggests similar PDFs and learning materials from the web. Users can refine these suggestions with their own queries.
+*   **AI-Powered Table of Contents**: Automatically extracts a table of contents from the document.
+*   **AI-Generated Quizzes**: Generates quizzes based on document content to test understanding.
 *   **Navigation and Study Aids (Mocked/Local State)**:
-    *   Full-text search within a document.
-    *   Bookmarking functionality.
-    *   A "Study Notes" sidebar for custom annotations.
+    *   Full-text search within a document (mocked).
+    *   Bookmarking functionality (local state).
+    *   A "Study Notes" sidebar for custom annotations (local state).
+    *   Focus Timer (Pomodoro Technique).
 *   **Content Sharing (Mocked)**: Share annotated PDF or snips via email or WhatsApp (simulated).
 
 ## Tech Stack
@@ -24,9 +27,9 @@ ScholarStream is a student-centric PDF toolkit designed to enhance the study exp
 *   **UI**: ShadCN UI components, Tailwind CSS
 *   **AI**: Genkit (with Google AI/Gemini models)
 *   **Styling**:
-    *   Primary color: Deep indigo (#4B0082)
-    *   Background color: Very light grayish-blue (#F0F8FF)
-    *   Accent color: Soft lavender (#E6E6FA)
+    *   Primary color: Deep indigo (theme-defined)
+    *   Background color: Very light grayish-blue (theme-defined)
+    *   Accent color: Soft lavender (theme-defined)
     *   Body text: 'Inter' (sans-serif)
     *   Headline: 'Space Grotesk' (sans-serif)
 
@@ -74,7 +77,7 @@ ScholarStream is a student-centric PDF toolkit designed to enhance the study exp
         ```
         This will start the Genkit Developer UI, usually on `http://localhost:4000`, where you can inspect and test your AI flows.
 
-5.  Open your browser to `http://localhost:9002` to see the ScholarStream application.
+5.  Open your browser to `http://localhost:9002` to see the Scholar Stream application.
 
 ### Building for Production
 
@@ -93,19 +96,27 @@ yarn start
     *   `src/components/ui/`: ShadCN UI components.
     *   `src/components/document/`: Components related to document display and library.
     *   `src/components/viewer/`: Components specific to the PDF viewing interface.
+    *   `src/components/layout/`: Components for overall app structure like the header.
 *   `src/ai/`: Genkit related files.
     *   `src/ai/flows/`: Genkit flow definitions.
 *   `src/constants/`: Mock data and other constants.
 *   `src/lib/`: Utility functions.
 *   `src/hooks/`: Custom React hooks.
 *   `src/types/`: TypeScript type definitions.
+*   `src/contexts/`: React Context definitions.
 *   `public/`: Static assets.
 *   `tailwind.config.ts`: Tailwind CSS configuration.
 *   `next.config.ts`: Next.js configuration.
 
 ## Known Limitations / Future Work
 
-*   Many features currently rely on mock data and simulated actions (e.g., PDF import, snip tool, sharing, persistent bookmarks/notes). Backend integration (e.g., Firebase) is needed for full functionality.
+*   Many features still rely on mock data and simulated actions (e.g., PDF import, snip tool, sharing, persistent bookmarks/notes). Backend integration (e.g., Firebase) is needed for full functionality.
 *   Actual PDF rendering is not implemented; the viewer shows mock content.
 *   Cloud storage integrations for PDF import are planned.
 *   Full-text search, bookmarking, and study notes need to be connected to a persistent storage and the actual document content.
+*   Advanced AI features like "Explain It To Me", argument detection, and translation are planned.
+*   Further UI/UX enhancements and gamification.
+*   Full freemium model implementation with subscription management.
+*   Accessibility improvements.
+
+```
