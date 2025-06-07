@@ -8,7 +8,7 @@ import { ReaderModeProvider } from '@/contexts/ReaderModeContext';
 
 
 export const metadata: Metadata = {
-  title: 'Scholar Stream',
+  title: 'Scholars Stream',
   description: 'Your student-centric PDF toolkit.',
 };
 

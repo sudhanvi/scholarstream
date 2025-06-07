@@ -1,7 +1,7 @@
 
-# Scholar Stream
+# Scholars Stream
 
-Scholar Stream is a student-centric PDF toolkit designed to enhance the study experience. It allows users to import, view, and interact with PDF documents, offering features like a searchable document library, AI-powered content suggestions, and study aids.
+Scholars Stream is a student-centric PDF toolkit designed to enhance the study experience. It allows users to import, view, and interact with PDF documents, offering features like a searchable document library, AI-powered content suggestions, and study aids.
 
 ## Core Features:
 
@@ -77,7 +77,7 @@ Scholar Stream is a student-centric PDF toolkit designed to enhance the study ex
         ```
         This will start the Genkit Developer UI, usually on `http://localhost:4000`, where you can inspect and test your AI flows.
 
-5.  Open your browser to `http://localhost:9002` to see the Scholar Stream application.
+5.  Open your browser to `http://localhost:9002` to see the Scholars Stream application.
 
 ### Building for Production
 
@@ -118,5 +118,3 @@ yarn start
 *   Further UI/UX enhancements and gamification.
 *   Full freemium model implementation with subscription management.
 *   Accessibility improvements.
-
-```
