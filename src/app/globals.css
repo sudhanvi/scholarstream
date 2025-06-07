@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,24 +14,24 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 10%;
 
-    --primary: 271 100% 25%; /* Deep Indigo */
+    --primary: 270 90% 45%; /* Updated: Brighter Deep Indigo */
     --primary-foreground: 240 60% 98%; /* Very Light Lavender/White */
 
-    --secondary: 240 60% 90%; /* Lighter Lavender */
-    --secondary-foreground: 271 80% 30%; /* Darker Indigo */
+    --secondary: 240 70% 88%; /* Updated: Slightly more vibrant Lighter Lavender */
+    --secondary-foreground: 270 80% 30%; /* Darker Indigo */
 
     --muted: 240 50% 95%; /* Very light lavender/gray */
     --muted-foreground: 240 20% 45%; /* Grayish lavender */
 
-    --accent: 240 67% 94%; /* Lavender */
-    --accent-foreground: 271 100% 25%; /* Deep Indigo */
+    --accent: 240 80% 85%; /* Updated: More vibrant Lavender */
+    --accent-foreground: 270 90% 45%; /* Updated: Brighter Deep Indigo */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 240 30% 88%; /* Light lavender gray border */
     --input: 240 30% 92%; /* Lighter lavender gray input bg */
-    --ring: 271 80% 55%; /* Brighter Indigo for ring */
+    --ring: 270 80% 55%; /* Brighter Indigo for ring */
 
     --radius: 0.5rem;
 
@@ -43,12 +44,12 @@
     /* Sidebar specific variables (can be adjusted if a complex sidebar is used) */
     --sidebar-background: 208 100% 95%; /* Slightly darker than main background */
     --sidebar-foreground: 240 10% 15%;
-    --sidebar-primary: 271 100% 25%;
+    --sidebar-primary: 270 90% 45%;
     --sidebar-primary-foreground: 240 60% 98%;
-    --sidebar-accent: 240 67% 92%; /* Slightly darker accent */
-    --sidebar-accent-foreground: 271 100% 25%;
+    --sidebar-accent: 240 80% 80%; /* Slightly adjusted sidebar accent */
+    --sidebar-accent-foreground: 270 90% 45%;
     --sidebar-border: 240 30% 85%;
-    --sidebar-ring: 271 80% 55%;
+    --sidebar-ring: 270 80% 55%;
   }
 
   .dark {
@@ -61,8 +62,9 @@
     --popover: 270 25% 18%;
     --popover-foreground: 210 40% 95%;
 
-    --primary: 240 67% 94%; /* Lavender as primary */
-    --primary-foreground: 271 100% 25%; /* Deep Indigo text on Lavender */
+    /* In dark mode, the original light mode accent (Lavender) becomes primary */
+    --primary: 240 80% 85%; /* Uses the new light mode accent as primary */
+    --primary-foreground: 270 30% 12%; /* Dark deep indigo text on Lavender */
 
     --secondary: 271 40% 30%; /* Muted Indigo */
     --secondary-foreground: 210 40% 95%;
@@ -70,7 +72,8 @@
     --muted: 271 20% 25%; /* Darker muted indigo */
     --muted-foreground: 210 30% 70%; /* Lighter gray blue for muted text */
 
-    --accent: 271 70% 50%; /* Brighter Indigo for accent */
+    /* In dark mode, the original light mode primary (Deep Indigo) becomes accent */
+    --accent: 270 80% 60%; /* Brighter, more vibrant Indigo for dark mode accent */
     --accent-foreground: 210 40% 98%; /* Almost white */
 
     --destructive: 0 72.2% 50.6%;
@@ -89,9 +92,9 @@
     /* Sidebar specific variables for dark mode */
     --sidebar-background: 270 30% 10%; /* Darker than main dark background */
     --sidebar-foreground: 210 40% 90%;
-    --sidebar-primary: 240 67% 94%;
-    --sidebar-primary-foreground: 271 100% 25%;
-    --sidebar-accent: 271 50% 40%; /* Darker accent for sidebar */
+    --sidebar-primary: 240 80% 85%;
+    --sidebar-primary-foreground: 270 30% 12%;
+    --sidebar-accent: 270 60% 50%; /* Darker accent for sidebar */
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 271 20% 25%;
     --sidebar-ring: 240 80% 80%;

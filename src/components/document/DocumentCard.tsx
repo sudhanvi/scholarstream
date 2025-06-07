@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,15 +35,15 @@ export function DocumentCard({ document }: DocumentCardProps) {
   }, [document.lastOpened]);
 
   return (
-    <Card className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <Card className="group flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out hover:border-primary">
       <CardHeader className="p-0">
-        <Link href={`/document/${document.id}`} className="block" aria-label={`Open document ${document.name}`}>
+        <Link href={`/document/${document.id}`} className="block overflow-hidden" aria-label={`Open document ${document.name}`}>
           <Image
             src={document.thumbnailUrl}
             alt={`Thumbnail for ${document.name}`}
             width={300}
             height={420}
-            className="w-full h-48 object-cover"
+            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
             data-ai-hint="document cover"
           />
         </Link>
